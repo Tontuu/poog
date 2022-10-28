@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo "BUILDING:
+"
+
+g++ -Wall -Wextra -Werror /home/tontuu/Code/CPP/poog/src/*.cpp -o ../main -lsfml-graphics -lsfml-system -lsfml-window
+
+# &&./main > /dev/null 2>&1 
