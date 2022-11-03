@@ -12,14 +12,15 @@ private:
 
     // Variables
     sf::Vector2f vel;
-
+    bool hitBlueWall;
+    bool hitRedWall;
 public:
     // Constructor
     Ball(float radius, sf::Color color, sf::Vector2f pos, sf::Vector2f vel);
 
     // Public Functions
     void update();
-    void hitWall(sf::RenderWindow& window);
+    int hitWall(sf::RenderWindow& window);
     void hitPaddle(Paddle& paddle);
 };
 

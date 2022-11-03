@@ -1,24 +1,32 @@
 #include "ball.h"
-#include <iostream>
 
 Ball::Ball(float radius, sf::Color color, sf::Vector2f pos, sf::Vector2f vel) : vel{vel} {
     setFillColor(color);
     setRadius(radius);
     setPosition(pos);
+    hitBlueWall = false;
+    hitRedWall = false;
 }
 
 void Ball::update() {
     setPosition(getPosition().x + vel.x, getPosition().y + vel.y);
 }
 
-void Ball::hitWall(sf::RenderWindow& window) {
+int Ball::hitWall(sf::RenderWindow& window) {
+    // Return options:
+    // -1: Hitted red wall
+    // 1: Hitted blue wall
+    // 0: Hitted the top/bottom wall
+
     if (getPosition().x + getRadius()*2 >= window.getSize().x || getPosition().x < 0) {
-	// TODO(#2): Lose life function
 	reverse(sf::Vector2f(-vel.x, vel.y));
+	return (getPosition().x < window.getSize().x/2) ? -1 : 1;
     }
 
     if (getPosition().y + getRadius()*2 >= window.getSize().y || getPosition().y <= 0)
 	reverse(sf::Vector2f(vel.x, -vel.y));
+
+    return 0;
 }
 
 void Ball::hitPaddle(Paddle& paddle) {

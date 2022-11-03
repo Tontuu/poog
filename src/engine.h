@@ -22,6 +22,7 @@ private:
     void update();
     void render();
     void checkEvents();
+    void checkHitWall();
 
     // Variables
     float vel;
@@ -32,6 +33,18 @@ public:
 
     // Public Functions
     void run();
+
+    // Resources
+    struct LifeTexts {
+	sf::Font font;
+	sf::Text redLife;
+	sf::Text blueLife;
+
+	LifeTexts(int redLifeCount, int blueLifeCount);
+	void update(int redLifeCount, int blueLifeCount);
+    };
+
+    LifeTexts lifeTexts;
 };
 
 #endif

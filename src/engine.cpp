@@ -1,4 +1,24 @@
 #include "engine.h"
+#include <iostream>
+#include <cassert>
+
+// struct LifeTexts {
+
+//     LifeTexts(char redLifeCount, char blueLifeCount) {
+// 	assert(font.loadFromFile("assets/fairfax.ttf"));
+// 	redLife.setFont(font);
+// 	blueLife.setFont(font);
+
+// 	redLife.setString(redLifeCount);
+// 	redLife.setPosition(0, 20);
+// 	redLife.setFillColor(sf::Color::Red);
+
+// 	blueLife.setString(blueLifeCount);
+// 	blueLife.setPosition(window.getSize().x, 20);
+// 	blueLife.setFillColor(sf::Color::Blue);
+//     }
+// };
+
 
 // Constructor
 Engine::Engine()
@@ -6,14 +26,34 @@ Engine::Engine()
       ball(10, sf::Color::White, sf::Vector2f(320.0f, 50.0f), sf::Vector2f(4, 4)),
       redPaddle(
 	  sf::Vector2f(10, window.getSize().y / 4), sf::Color::Red,
-	  sf::Vector2f(0, window.getSize().y / 2)),
+	  sf::Vector2f(0, window.getSize().y / 2), 3),
       bluePaddle(
 	  sf::Vector2f(10, window.getSize().y / 4), sf::Color::Blue,
-	  sf::Vector2f(window.getSize().x - 10, window.getSize().y / 2))
+	  sf::Vector2f(window.getSize().x - 10, window.getSize().y / 2), 3),
+      lifeTexts(redPaddle.getLifeCount(), bluePaddle.getLifeCount())
 {
     window.setFramerateLimit(60);
     backgroundColor = sf::Color(50, 50, 50);
+    lifeTexts.redLife.setPosition(10, 5);
+    lifeTexts.blueLife.setPosition(
+	window.getSize().x - 10 - lifeTexts.blueLife.getLocalBounds().width, 5);
 }
+
+Engine::LifeTexts::LifeTexts(int redLifeCount, int blueLifeCount) {
+    assert(font.loadFromFile("assets/fairfax.ttf"));
+
+    redLife.setFont(font);
+    blueLife.setFont(font);
+
+    redLife.setFillColor(sf::Color::Red);
+    blueLife.setFillColor(sf::Color::Blue);
+
+    char redLifeCountChar = redLifeCount + '0';
+    char blueLifeCountChar = blueLifeCount + '0';
+    redLife.setString(redLifeCountChar);
+    blueLife.setString(blueLifeCountChar);
+}
+
 
 // Functions
 void Engine::run() {
@@ -58,14 +98,38 @@ void Engine::checkEvents() {
 }
 
 // Update game
+void Engine::LifeTexts::update(int redLifeCount, int blueLifeCount) {
+    redLife.setString(std::to_string(redLifeCount));
+    blueLife.setString(std::to_string(blueLifeCount));
+}
+
+void Engine::checkHitWall() {
+    int wallFlag = ball.hitWall(window);
+    if (wallFlag == -1) {
+	redPaddle.popLife();
+	lifeTexts.update(redPaddle.getLifeCount(), bluePaddle.getLifeCount());
+	window.clear(sf::Color::Red);
+	window.display();
+    } else if (wallFlag == 1) {
+	bluePaddle.popLife();
+	lifeTexts.update(redPaddle.getLifeCount(), bluePaddle.getLifeCount());
+	window.clear(sf::Color::Blue);
+	window.display();
+    }
+}
+
 void Engine::update() {
     ball.update();
     redPaddle.update(window);
     bluePaddle.update(window);
 
-    ball.hitWall(window);
+    checkHitWall();
+
     ball.hitPaddle(redPaddle);
     ball.hitPaddle(bluePaddle);
+
+    // TODO: Implement WIN state
+    // TODO: Implement PAUSE state
 }
 
 // Draw game
@@ -75,6 +139,8 @@ void Engine::render() {
     window.draw(ball);
     window.draw(redPaddle);
     window.draw(bluePaddle);
+    window.draw(lifeTexts.redLife);
+    window.draw(lifeTexts.blueLife);
 
     window.display();
 }

@@ -1,10 +1,11 @@
 #include "paddle.h"
 #include <iostream>
 
-Paddle::Paddle(sf::Vector2f size, sf::Color color, sf::Vector2f pos) {
+Paddle::Paddle(sf::Vector2f size, sf::Color color, sf::Vector2f pos, int life) {
     setSize(size);
     setFillColor(color);
     setPosition(pos);
+    lifeCount = life;
 }
 
 void Paddle::update(sf::RenderWindow& window) {
@@ -27,4 +28,12 @@ void Paddle::update(sf::RenderWindow& window) {
 	setPosition(x, window.getSize().y - getSize().y);
 
     move(vel);
+}
+
+void Paddle::popLife() {
+    lifeCount--;
+}
+
+int Paddle::getLifeCount() {
+    return lifeCount;
 }
